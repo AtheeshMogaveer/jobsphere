@@ -11,8 +11,9 @@ const db = require("./config/db");
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // Local dev
-      process.env.FRONTEND_URL, // Production frontend
+      "http://localhost:5173",
+      "https://jobsphere-brown.vercel.app", // your exact Vercel URL
+      process.env.FRONTEND_URL,
     ],
     credentials: true,
   }),
