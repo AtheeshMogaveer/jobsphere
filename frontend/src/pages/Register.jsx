@@ -10,15 +10,13 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       const res = await registerUser(form);
       login(res.data.token, res.data.user);
@@ -30,73 +28,187 @@ const Register = () => {
     }
   };
 
+  const inputStyle = {
+    width: "100%",
+    padding: "11px 14px",
+    borderRadius: "10px",
+    background: "var(--bg)",
+    border: "1px solid var(--border)",
+    color: "var(--text)",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.2s",
+  };
+  const labelStyle = {
+    fontSize: "13px",
+    fontWeight: "500",
+    color: "#a0aec0",
+    display: "block",
+    marginBottom: "8px",
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-card border border-border rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-        <p className="text-slate-400 mb-8">Join JobSphere today</p>
-
-        {error && (
-          <div className="bg-red-900 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-6">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="text-slate-300 text-sm mb-2 block">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="John Doe"
-              required
-              className="w-full bg-secondary border border-border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition"
-            />
-          </div>
-          <div>
-            <label className="text-slate-300 text-sm mb-2 block">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="john@example.com"
-              required
-              className="w-full bg-secondary border border-border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition"
-            />
-          </div>
-          <div>
-            <label className="text-slate-300 text-sm mb-2 block">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Min 6 characters"
-              required
-              className="w-full bg-secondary border border-border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary hover:bg-indigo-600 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50"
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 24px 40px",
+      }}
+    >
+      <div className="fade-up" style={{ width: "100%", maxWidth: "420px" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              borderRadius: "14px",
+              margin: "0 auto 20px",
+              background: "linear-gradient(135deg, #4f8eff, #7c5cfc)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "20px",
+              fontWeight: "800",
+              color: "white",
+              fontFamily: "Syne, sans-serif",
+              boxShadow: "0 8px 24px rgba(79,142,255,0.3)",
+            }}
           >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
-        </form>
+            J
+          </div>
+          <h1
+            style={{
+              fontFamily: "Syne, sans-serif",
+              fontSize: "28px",
+              fontWeight: "800",
+              color: "white",
+              letterSpacing: "-0.03em",
+              marginBottom: "8px",
+            }}
+          >
+            Create account
+          </h1>
+          <p style={{ color: "var(--muted)", fontSize: "15px" }}>
+            Start finding your dream job today
+          </p>
+        </div>
 
-        <p className="text-slate-400 text-center mt-6">
+        <div
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "20px",
+            padding: "32px",
+          }}
+        >
+          {error && (
+            <div
+              style={{
+                background: "rgba(239,68,68,0.08)",
+                border: "1px solid rgba(239,68,68,0.2)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                marginBottom: "20px",
+                fontSize: "13px",
+                color: "#f87171",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: "16px" }}>
+              <label style={labelStyle}>Full name</label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                required
+                style={inputStyle}
+                onFocus={(e) =>
+                  (e.target.style.borderColor = "rgba(79,142,255,0.5)")
+                }
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              />
+            </div>
+            <div style={{ marginBottom: "16px" }}>
+              <label style={labelStyle}>Email address</label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                required
+                style={inputStyle}
+                onFocus={(e) =>
+                  (e.target.style.borderColor = "rgba(79,142,255,0.5)")
+                }
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              />
+            </div>
+            <div style={{ marginBottom: "24px" }}>
+              <label style={labelStyle}>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Min 6 characters"
+                required
+                style={inputStyle}
+                onFocus={(e) =>
+                  (e.target.style.borderColor = "rgba(79,142,255,0.5)")
+                }
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "white",
+                background: "linear-gradient(135deg, #4f8eff, #7c5cfc)",
+                boxShadow: "0 4px 16px rgba(79,142,255,0.25)",
+                opacity: loading ? 0.7 : 1,
+                transition: "all 0.2s",
+              }}
+            >
+              {loading ? "Creating account..." : "Create Account →"}
+            </button>
+          </form>
+        </div>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "24px",
+            fontSize: "14px",
+            color: "var(--muted)",
+          }}
+        >
           Already have an account?{" "}
-          <Link to="/login" className="text-primary hover:underline">
-            Login
+          <Link
+            to="/login"
+            style={{
+              color: "#4f8eff",
+              textDecoration: "none",
+              fontWeight: "500",
+            }}
+          >
+            Sign in
           </Link>
         </p>
       </div>

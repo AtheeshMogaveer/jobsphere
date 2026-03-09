@@ -5,15 +5,14 @@ import { useAuth } from "../context/AuthContext";
 const JobCard = ({ job, isSaved = false, onUnsave }) => {
   const { user } = useAuth();
   const [saved, setSaved] = useState(isSaved);
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleSaveToggle = async () => {
     if (!user) {
       alert("Please login to save jobs");
       return;
     }
-
-    setLoading(true);
+    setSaving(true);
     try {
       if (saved) {
         await deleteSavedJob(job.job_id);
@@ -32,94 +31,263 @@ const JobCard = ({ job, isSaved = false, onUnsave }) => {
         });
         setSaved(true);
       }
-    } catch (error) {
-      console.error("Save toggle error:", error);
+    } catch (err) {
+      console.error(err);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
+  const timeAgo = (date) => {
+    if (!date) return "Recently";
+    const days = Math.floor((Date.now() - new Date(date)) / 86400000);
+    if (days === 0) return "Today";
+    if (days === 1) return "1d ago";
+    if (days < 30) return `${days}d ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  };
+
   return (
-    <div className="bg-card border border-border rounded-xl p-6 hover:border-primary transition group">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+    <div
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderRadius: "16px",
+        padding: "22px",
+        transition: "all 0.25s ease",
+        position: "relative",
+        overflow: "hidden",
+        cursor: "default",
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.borderColor = "rgba(79,142,255,0.22)";
+        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = "0 16px 40px rgba(0,0,0,0.35)";
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.borderColor = "var(--border)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+    >
+      {/* Top row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "14px",
+        }}
+      >
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           {job.company_logo ? (
             <img
               src={job.company_logo}
               alt={job.company}
-              className="w-12 h-12 rounded-lg object-contain bg-white p-1"
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                objectFit: "contain",
+                background: "white",
+                padding: "4px",
+              }}
             />
           ) : (
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg">
-              {job.company?.[0]}
+            <div
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #4f8eff22, #7c5cfc22)",
+                border: "1px solid rgba(79,142,255,0.15)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#4f8eff",
+                fontFamily: "Syne, sans-serif",
+              }}
+            >
+              {job.company?.[0]?.toUpperCase()}
             </div>
           )}
           <div>
-            <h3 className="font-semibold text-white group-hover:text-primary transition">
+            <div
+              style={{
+                fontSize: "15px",
+                fontWeight: "600",
+                color: "white",
+                lineHeight: "1.3",
+                marginBottom: "2px",
+              }}
+            >
               {job.job_title}
-            </h3>
-            <p className="text-slate-400 text-sm">{job.company}</p>
+            </div>
+            <div style={{ fontSize: "13px", color: "var(--muted)" }}>
+              {job.company}
+            </div>
           </div>
         </div>
 
-        {/* Save Button */}
+        {/* Save button */}
         <button
           onClick={handleSaveToggle}
-          disabled={loading}
-          className={`text-xl transition ${
-            saved ? "text-yellow-400" : "text-slate-500 hover:text-yellow-400"
-          }`}
+          disabled={saving}
+          style={{
+            width: "34px",
+            height: "34px",
+            borderRadius: "8px",
+            border: "none",
+            background: saved
+              ? "rgba(251,191,36,0.1)"
+              : "rgba(255,255,255,0.04)",
+            cursor: "pointer",
+            fontSize: "16px",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: saved ? "#fbbf24" : "var(--muted)",
+            flexShrink: 0,
+          }}
+          onMouseOver={(e) => {
+            if (!saved) e.currentTarget.style.color = "#fbbf24";
+          }}
+          onMouseOut={(e) => {
+            if (!saved) e.currentTarget.style.color = "var(--muted)";
+          }}
         >
           {saved ? "★" : "☆"}
         </button>
       </div>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "6px",
+          marginBottom: "14px",
+        }}
+      >
         {job.location && (
-          <span className="bg-slate-700 text-slate-300 text-xs px-3 py-1 rounded-full">
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "500",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid var(--border)",
+              color: "#a0aec0",
+            }}
+          >
             📍 {job.location}
           </span>
         )}
         {job.is_remote && (
-          <span className="bg-green-900 text-green-300 text-xs px-3 py-1 rounded-full">
-            🌐 Remote
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "600",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              background: "rgba(16,185,129,0.08)",
+              border: "1px solid rgba(16,185,129,0.2)",
+              color: "#34d399",
+              letterSpacing: "0.02em",
+            }}
+          >
+            REMOTE
           </span>
         )}
         {job.employment_type && (
-          <span className="bg-blue-900 text-blue-300 text-xs px-3 py-1 rounded-full">
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "500",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              background: "rgba(79,142,255,0.08)",
+              border: "1px solid rgba(79,142,255,0.15)",
+              color: "#7eb8ff",
+            }}
+          >
             {job.employment_type}
           </span>
         )}
         {job.salary_min && (
-          <span className="bg-purple-900 text-purple-300 text-xs px-3 py-1 rounded-full">
-            💰 {job.salary_currency} {job.salary_min?.toLocaleString()} -{" "}
-            {job.salary_max?.toLocaleString()}
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "500",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              background: "rgba(124,92,252,0.08)",
+              border: "1px solid rgba(124,92,252,0.15)",
+              color: "#a78bfa",
+            }}
+          >
+            💰 {job.salary_currency} {Number(job.salary_min).toLocaleString()}–
+            {Number(job.salary_max).toLocaleString()}
           </span>
         )}
       </div>
 
       {/* Description */}
-      <p className="text-slate-400 text-sm mb-4 line-clamp-2">
-        {job.description}
-      </p>
+      {job.description && (
+        <p
+          style={{
+            fontSize: "13px",
+            color: "var(--muted)",
+            lineHeight: "1.6",
+            marginBottom: "16px",
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {job.description}
+        </p>
+      )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
-        <span className="text-slate-500 text-xs">
-          {job.posted_at
-            ? new Date(job.posted_at).toLocaleDateString()
-            : "Recently posted"}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "auto",
+        }}
+      >
+        <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+          {timeAgo(job.posted_at)}
         </span>
-
         <a
           href={job.apply_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-primary hover:bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg transition"
+          style={{
+            textDecoration: "none",
+            padding: "7px 16px",
+            borderRadius: "8px",
+            fontSize: "12px",
+            fontWeight: "600",
+            color: "white",
+            background: "linear-gradient(135deg, #4f8eff, #7c5cfc)",
+            transition: "all 0.2s",
+            display: "inline-block",
+          }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.boxShadow =
+              "0 4px 16px rgba(79,142,255,0.3)")
+          }
+          onMouseOut={(e) => (e.currentTarget.style.boxShadow = "none")}
         >
-          Apply Now →
+          Apply →
         </a>
       </div>
     </div>
