@@ -5,12 +5,13 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
-
-// This line connects to DB the moment server starts
 const db = require("./config/db");
 
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
 
 app.get("/", (req, res) => {
   res.json({ message: "🚀 JobSphere API is running!" });
