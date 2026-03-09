@@ -10,9 +10,10 @@ const db = require("./config/db");
 app.use(cors());
 app.use(express.json());
 
-// All routes
+// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/jobs", require("./routes/jobRoutes"));
+app.use("/api/saved", require("./routes/savedJobsRoutes"));
 
 app.get("/", (req, res) => {
   res.json({ message: "🚀 JobSphere API is running!" });
