@@ -7,10 +7,19 @@ dotenv.config();
 const app = express();
 const db = require("./config/db");
 
-app.use(cors());
+// UPDATED CORS — allows your Vercel frontend to call this API
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Local dev
+      process.env.FRONTEND_URL, // Production frontend
+    ],
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 
-// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/jobs", require("./routes/jobRoutes"));
 app.use("/api/saved", require("./routes/savedJobsRoutes"));
